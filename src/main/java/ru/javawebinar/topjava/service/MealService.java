@@ -6,13 +6,13 @@ import ru.javawebinar.topjava.model.MealTo;
 import java.util.List;
 
 public interface MealService {
-    List<MealTo> getAllMeals();
+    List<Meal> getAll();
 
-    void addMeal(Meal meal);
+    Meal add(Meal meal);
 
-    void editMeal(Meal meal);
+    Meal edit(Meal meal);
 
-    Meal getMealById(int id);
+    Meal getById(int id);
 
-    void deleteMeal(int id);
+    boolean delete(Meal meal);
 }
