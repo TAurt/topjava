@@ -34,9 +34,7 @@ public class MealRestController {
 
     public List<MealTo> getAllByFilter(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         log.info("getAllByFilter");
-        return MealsUtil.getTos(service.getAllByFilter(authUserId(), startDate, endDate), authUserCaloriesPerDay()).stream()
-                .filter(mealTo -> DateTimeUtil.isBetweenHalfOpen(mealTo.getDateTime().toLocalTime(), startTime, endTime))
-                .collect(Collectors.toList());
+        return MealsUtil.getFilteredTos(service.getAllByFilter(authUserId(), startDate, endDate), authUserCaloriesPerDay(), startTime, endTime);
     }
 
     public Meal get(int id) {
@@ -60,5 +58,4 @@ public class MealRestController {
         checkNew(meal);
         return service.create(authUserId(), meal);
     }
-
 }

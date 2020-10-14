@@ -27,8 +27,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal save(int userId, Meal meal) {
         log.info("save {}", meal);
-        Map<Integer, Meal> meals = repository.getOrDefault(userId, new HashMap<>());
-        repository.put(userId, meals);
+        Map<Integer, Meal> meals = repository.computeIfAbsent(userId, key -> new HashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             meals.put(meal.getId(), meal);
@@ -77,7 +76,7 @@ public class InMemoryMealRepository implements MealRepository {
     public Collection<Meal> getAllByFilter(int userId, LocalDate startDate, LocalDate endDate) {
         log.info("getAllByFilter");
         return this.getAll(userId).stream()
-                .filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate))
+                .filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate.plusDays(1)))
                 .collect(Collectors.toList());
     }
 }

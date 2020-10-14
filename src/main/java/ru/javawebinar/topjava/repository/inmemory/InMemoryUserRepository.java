@@ -50,7 +50,13 @@ public class InMemoryUserRepository implements UserRepository {
         if (repository.isEmpty())
             return Collections.emptyList();
         return repository.values().stream()
-                .sorted(Comparator.comparing(AbstractNamedEntity::getName))
+                .sorted((o1, o2) -> {
+                    if (o1.getName().equals(o2.getName())) {
+                        return o1.getEmail().compareTo(o2.getEmail());
+                    } else {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                })
                 .collect(Collectors.toList());
     }
 
@@ -59,6 +65,6 @@ public class InMemoryUserRepository implements UserRepository {
         log.info("getByEmail {}", email);
         return repository.values().stream()
                 .filter(user -> user.getEmail().equals(email))
-                .findFirst().get();
+                .findFirst().orElse(null);
     }
 }
