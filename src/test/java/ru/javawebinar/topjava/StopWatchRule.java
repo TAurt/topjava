@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class StopWatchRule extends Stopwatch {
-    private static final Logger log = LoggerFactory.getLogger(StopWatchRule.class);
+    private static final Logger log = LoggerFactory.getLogger("result");
     private static final List<String> resultTestTime = new ArrayList<>();
 
     private static void logInfo(Description description, String status, long nanos) {
@@ -19,12 +19,13 @@ public class StopWatchRule extends Stopwatch {
         log.info(String.format("Test %s %s, spent %d ms",
                 testName, status, TimeUnit.NANOSECONDS.toMillis(nanos)));
         if (status.equals("finished")) {
-            resultTestTime.add(String.format("Test %s - %s, spent %d ms",
-                    testName, status, TimeUnit.NANOSECONDS.toMillis(nanos)));
+            resultTestTime.add(String.format("%s - %d ms",
+                    testName, TimeUnit.NANOSECONDS.toMillis(nanos)));
         }
     }
 
     public static void getAllResultList() {
+        log.info("<-------------Test time result---------------->");
         resultTestTime.forEach(log::info);
     }
 
