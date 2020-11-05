@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class JdbcMealRepository implements MealRepository {
+public abstract class JdbcMealRepository implements MealRepository {
 
     private static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
@@ -36,13 +36,12 @@ public class JdbcMealRepository implements MealRepository {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    @Override
-    public Meal save(Meal meal, int userId) {
+    protected <T> Meal saveIn(Meal meal, int userId, T mealGetDateTime) {
         MapSqlParameterSource map = new MapSqlParameterSource()
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
-                .addValue("date_time", meal.getDateTime())
+                .addValue("date_time",  mealGetDateTime)
                 .addValue("user_id", userId);
 
         if (meal.isNew()) {
@@ -50,9 +49,9 @@ public class JdbcMealRepository implements MealRepository {
             meal.setId(newId.intValue());
         } else {
             if (namedParameterJdbcTemplate.update("" +
-                            "UPDATE meals " +
-                            "   SET description=:description, calories=:calories, date_time=:date_time " +
-                            " WHERE id=:id AND user_id=:user_id", map) == 0) {
+                    "UPDATE meals " +
+                    "   SET description=:description, calories=:calories, date_time=:date_time " +
+                    " WHERE id=:id AND user_id=:user_id", map) == 0) {
                 return null;
             }
         }
@@ -77,8 +76,8 @@ public class JdbcMealRepository implements MealRepository {
                 "SELECT * FROM meals WHERE user_id=? ORDER BY date_time DESC", ROW_MAPPER, userId);
     }
 
-    @Override
-    public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
+
+    protected <T> List<Meal> getBetween(T startDateTime, T endDateTime, int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
                 ROW_MAPPER, userId, startDateTime, endDateTime);
