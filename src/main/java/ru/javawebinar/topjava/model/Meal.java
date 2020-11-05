@@ -95,9 +95,7 @@ public class Meal extends AbstractBaseEntity {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public void setUser(User user) {this.user = user;}
 
     @Override
     public String toString() {
