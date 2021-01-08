@@ -7,7 +7,9 @@ import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -102,5 +104,13 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest{
     @Test
     public void getBetweenWithNullDates() {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), meals);
+    }
+
+    @Test
+    void createWithException() {
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, LocalDateTime.of(2015, Month.JUNE, 1, 18, 0), "  ", 300), USER_ID));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, null, "Description", 300), USER_ID));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, LocalDateTime.of(2015, Month.JUNE, 1, 18, 0), "Description", 9), USER_ID));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, LocalDateTime.of(2015, Month.JUNE, 1, 18, 0), "Description", 5001), USER_ID));
     }
 }
